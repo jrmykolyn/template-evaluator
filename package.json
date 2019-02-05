@@ -1,13 +1,13 @@
 {
   "name": "template-evaluator",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.0",
+  "description": "A minimal implementation of a string template parser/evaluator.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive test"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jesse Mykolyn <jrmykolyn@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "chai": "^4.2.0",
