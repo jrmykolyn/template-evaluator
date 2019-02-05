@@ -1,6 +1,11 @@
 class TemplateEvaluator {
   constructor(opts = {}) {
     this.pipes = opts.pipes || {};
+    // Capture groups as follows:
+    // - 1: Opening template delimiter (ie. `{{`).
+    // - 2: Target text.
+    // - 3: Pipes or `undefined` (ie. `| foo | bar`).
+    // - 4: Closing template delimiter (ie. `}}`).
     this.pattern = /({{)\s?([^{}|]+)(\|?(?:[^{}]+)?\s?)?(}})/;
     this.defaultPipe = (content, match, pipes) => content;
   }
