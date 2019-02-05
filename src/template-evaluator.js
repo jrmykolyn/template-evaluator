@@ -1,7 +1,7 @@
 class TemplateEvaluator {
   constructor(opts = {}) {
     this.pipes = opts.pipes || {};
-    this.pattern = /({{)\s?([^{}|]+)\|?([^{}]+)?\s?(}})/;
+    this.pattern = /({{)\s?([^{}|]+)(\|?(?:[^{}]+)?\s?)?(}})/;
     this.defaultPipe = (content, match, pipes) => content;
   }
 
@@ -10,12 +10,21 @@ class TemplateEvaluator {
     let matches;
 
     while (matches = this.pattern.exec(output)) {
-      const [match, _, content, pipe = ''] = matches;
+      const [match, _, content, pipes = ''] = matches;
       const sanitizedContent = content.trim();
-      const sanitizedPipe = pipe.trim();
-      const fn = this.pipes[sanitizedPipe] || this.defaultPipe;
+      const sanitizedPipes = pipes.split('|')
+        .map((pipe) => pipe.trim())
+        .map((pipe) => this.pipes[pipe])
+        .filter((pipe) => !!pipe);
+      const fns = sanitizedPipes.length ? sanitizedPipes : [this.defaultPipe];
 
-      output = output.replace(match, fn(sanitizedContent, match, this.pipes));
+      // First pipe evaluates placeholder tokens and transforms value.
+      // Subsequent pipes operate on 'evaluated' output.
+      output = fns.reduce((acc, fn, i) => {
+        return i
+          ? fn(acc, match, this.pipes)
+          : acc.replace(match, fn(sanitizedContent, match, this.pipes));
+      }, output);
     }
 
     return output;

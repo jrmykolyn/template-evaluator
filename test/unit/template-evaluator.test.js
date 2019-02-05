@@ -71,6 +71,26 @@ describe('TemplateEvaluator', () => {
 
         instance.defaultPipe = instance.defaultPipe;
       });
+
+      it('should handle consecutive pipes', () => {
+        instance.pipes.upcase = (content) => content.toUpperCase();
+        instance.pipes.reverse = (content) => content.split('').reverse().join('');
+
+        expect(instance.evaluate('{{ abc | upcase | reverse }}')).to.eq('CBA');
+
+        delete instance.pipes.upcase;
+        delete instance.pipes.reverse;
+      });
+
+      it('should handle nested pipes', () => {
+        instance.pipes.upcase = (content) => content.toUpperCase();
+        instance.pipes.exclaim = (content) => `${content}!`;
+
+        expect(instance.evaluate('{{ Hello, {{ world | upcase }} | exclaim }}')).to.eq('Hello, WORLD!');
+
+        delete instance.pipes.upcase;
+        delete instance.pipes.exclaim;
+      });
     });
   });
 });
